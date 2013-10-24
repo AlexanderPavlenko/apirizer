@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.files = `git ls-files`.split("\n") - ["Gemfile.lock"]
   s.require_paths = ['lib']
 
-  s.add_dependency 'rails', '~> 4.0.0'
+  # s.add_dependency 'rails', '~> 4.0.0'
   s.add_dependency 'protector-cancan'
   s.add_dependency 'protector', '~> 0.7'
   s.add_dependency 'cancan'   , '~> 1.6'
