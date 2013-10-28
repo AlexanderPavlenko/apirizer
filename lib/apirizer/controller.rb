@@ -43,7 +43,8 @@ module Apirizer
         rescue_from(
           'ActiveRecord::RecordNotDestroyed',
           'ActiveModel::ForbiddenAttributesError',
-          :with => :render_protector_error
+          'CanCan::AccessDenied',
+          :with => :render_violation_error
         )
       end
     end
@@ -94,7 +95,7 @@ module Apirizer
       render :json => exception.record.errors, :status => :unprocessable_entity
     end
 
-    def render_protector_error(_)
+    def render_violation_error(_)
       head :method_not_allowed
     end
   end
