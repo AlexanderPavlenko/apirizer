@@ -87,7 +87,7 @@ module Apirizer
     private
 
     def resource_decorator_class
-      "#{@__cancan_resource.send(:namespaced_name)}Decorator".constantize
+      "#{@__cancan_resource.send(:namespaced_name).to_s.camelize}Decorator".constantize
     end
 
     def render_invalidation_error(exception)
