@@ -1,5 +1,5 @@
 require 'apirizer/version'
-require 'apirizer/rails/engine'
+require 'apirizer/engine'
 require 'apirizer/ability'
 require 'apirizer/controller'
 require 'apirizer/decorator'
