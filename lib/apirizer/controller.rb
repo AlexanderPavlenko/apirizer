@@ -4,7 +4,7 @@ module Apirizer
 
   module Controller
 
-    private
+  private
 
     def render_json(options)
       key = [:record, :collection, :custom].find{|k| options.key?(k) }
@@ -36,7 +36,7 @@ module Apirizer
     def self.included(base)
       base.extend ClassMethods
       base.class_eval do
-        rescue_from 'ActiveRecord::RecordInvalid', :with => :render_invalidation_error
+        rescue_from 'ActiveRecord::RecordInvalid',  :with => :render_invalidation_error
         rescue_from 'ActiveRecord::RecordNotFound', :with => :render_not_found_error
         rescue_from(
           'ActiveModel::ForbiddenAttributesError',
@@ -48,43 +48,39 @@ module Apirizer
     end
 
     def index
-      render_json collection: @_cancan_resource.send(:collection_instance)
+      render_json collection: @_apirizer_resource.collection_instance
     end
 
     def show
-      render_json record: @_cancan_resource.send(:resource_instance)
+      render_json record: @_apirizer_resource.resource_instance
     end
 
     def new
-      render_json record: @_cancan_resource.send(:resource_instance)
+      render_json record: @_apirizer_resource.resource_instance
     end
 
     def edit
-      render_json record: @_cancan_resource.send(:resource_instance)
+      render_json record: @_apirizer_resource.resource_instance
     end
 
     def create
-      resource = @_cancan_resource.send(:resource_instance)
+      resource = @_apirizer_resource.resource_instance
       if resource.save!
         render_json record: resource, status: :created, location: created_resource_location(resource)
       end
     end
 
     def update
-      resource = @_cancan_resource.send(:resource_instance)
-      if resource.update!(@_cancan_resource.send(:resource_params))
+      resource = @_apirizer_resource.resource_instance
+      if resource.update!(@_apirizer_resource.resource_params)
         head :no_content
       end
     end
 
     def destroy
-      if @_cancan_resource.send(:resource_instance).destroy!
+      if @_apirizer_resource.resource_instance.destroy!
         head :no_content
       end
-    end
-
-    def permitted_params
-      params
     end
 
   private
@@ -94,21 +90,21 @@ module Apirizer
     end
 
     def resource_decorator_class
-      "#{@_cancan_resource.send(:namespaced_name).to_s.camelize}Decorator".constantize
+      "#{@_apirizer_resource.namespaced_name.to_s.camelize}Decorator".constantize
     end
 
     def render_invalidation_error(ex)
-      Rails.logger.warn(ex.inspect) unless Rails.env.production?
+      Rails.logger.warn(ex.inspect)
       render :json => ex.record.errors, :status => :unprocessable_entity
     end
 
     def render_not_found_error(ex)
-      Rails.logger.warn(ex.inspect) unless Rails.env.production?
+      Rails.logger.warn(ex.inspect)
       head :not_found
     end
 
     def render_violation_error(ex)
-      Rails.logger.warn(ex.inspect) unless Rails.env.production?
+      Rails.logger.warn(ex.inspect)
       head :method_not_allowed
     end
   end
