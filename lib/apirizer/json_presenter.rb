@@ -6,7 +6,9 @@ module Apirizer
     # Class context
 
     def render_json(impl, data, action_name, fieldset_prefix=nil, fieldset=nil)
-      send :"render_json_#{impl}", data, build_fieldset(action_name, fieldset_prefix, fieldset)
+      fieldset = build_fieldset(action_name, fieldset_prefix, fieldset)
+      Rails.logger.info{ "Current Fieldset: #{fieldset}" }
+      send :"render_json_#{impl}", data, fieldset
     end
 
     def render_json_record(data, fieldset)
