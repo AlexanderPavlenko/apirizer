@@ -27,13 +27,16 @@ class Apirizer::ControllerResource < CanCan::ControllerResource
       else
         resource_params_by_name || super
       end
-      if strong_parameters? && @controller.respond_to?(:permit_params)
-        # protector auto-permission doesn't support non-scalar params
-        action = new_actions.include?(@params[:action].to_sym) ? :create : :update
-        meta = resource_base.protector_meta.access
-        params.permit(self.class.merge_permissions(@controller.permit_params, meta[action].try(:keys)))
-      else
-        params
+      if params
+        # ok, we're not in #new or any similar action
+        if strong_parameters? && @controller.respond_to?(:permit_params)
+          # protector auto-permission doesn't support non-scalar params
+          action = new_actions.include?(@params[:action].to_sym) ? :create : :update
+          meta = resource_base.protector_meta.access
+          params.permit(self.class.merge_permissions(@controller.permit_params, meta[action].try(:keys)))
+        else
+          params
+        end
       end
     end
   end
@@ -71,8 +74,11 @@ protected
 
   def resource_base
     base = super
-    base.restrict!(@controller.current_user) if base.respond_to?(:restrict!)
-    base
+    if base.respond_to?(:restrict!)
+      base.restrict!(@controller.current_user)
+    else
+      base
+    end
   end
 
   def strong_parameters?
