@@ -32,7 +32,12 @@ class Apirizer::ControllerResource < CanCan::ControllerResource
         if strong_parameters? && @controller.respond_to?(:permit_params)
           # protector auto-permission doesn't support non-scalar params
           action = new_actions.include?(@params[:action].to_sym) ? :create : :update
-          meta = resource_base.protector_meta.access
+          meta = case action
+            when :create
+              resource_base.protector_meta.access
+            when :update
+              resource_instance.protector_meta.access
+          end
           params.permit(self.class.merge_permissions(@controller.permit_params, meta[action].try(:keys)))
         else
           params
